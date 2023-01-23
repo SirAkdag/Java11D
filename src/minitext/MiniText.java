@@ -1,6 +1,8 @@
 package minitext;
 
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.StyledEditorKit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -145,6 +147,25 @@ public class MiniText extends JFrame {
         dateiSpeichernButton.addActionListener(listener);
         dateiSpeichernButton.setIcon(new ImageIcon("icons/save24.gif"));
         leiste.add(dateiSpeichernButton);
+
+        leiste.addSeparator();
+
+        Action cut = new DefaultEditorKit.CutAction();
+        cut.putValue(Action.SHORT_DESCRIPTION, "Cut");
+        cut.putValue(Action.LARGE_ICON_KEY, new ImageIcon("icons/cut24.gif"));
+        leiste.add(cut);
+
+        Action copy = new DefaultEditorKit.CopyAction();
+        copy.putValue(Action.SHORT_DESCRIPTION, "Copy");
+        copy.putValue(Action.LARGE_ICON_KEY, new ImageIcon("icons/copy24.gif"));
+        leiste.add(copy);
+
+        Action paste = new DefaultEditorKit.PasteAction();
+        paste.putValue(Action.SHORT_DESCRIPTION, "Paste");
+        paste.putValue(Action.LARGE_ICON_KEY, new ImageIcon("icons/paste24.gif"));
+        leiste.add(paste);
+
+        leiste.addSeparator();
 
         JButton infoButton = new JButton();
         infoButton.setActionCommand("infoButton");
