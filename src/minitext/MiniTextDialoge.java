@@ -9,25 +9,27 @@ public class MiniTextDialoge {
     //eine innere Klasse für den Filter
     //sie erbt von der Klasse FileFilter
     class MeinFilter extends FileFilter {
-
         //die Methode accept() definiert den Filter
-        //hier für Dateien mit der Erweiterung .txt
-        //und für Ordner
+        //hier für Dateien mit den Erweiterungen .html und .htm
+        //sowie für Ordner
         @Override
         public boolean accept(File f) {
             //für den kompakteren Zugriff
             String name = f.getName().toLowerCase();
             if (f.isDirectory())
                 return true;
-            if (name.endsWith(".txt"))
+            if (name.endsWith(".htm"))
                 return true;
+            if (name.endsWith(".html"))
+                return true;
+
             return false;
         }
 
         //die Methode legt den Namen für den Filter fest
         @Override
         public String getDescription() {
-            return "Textdateien";
+            return "HTML-Dateien";
         }
     }
 
@@ -43,7 +45,7 @@ public class MiniTextDialoge {
         //den Dialog anzeigen und den Status holen
         int status = oeffnenDialog.showOpenDialog(null);
 
-        //wurde auf Open geklickt, dann die ausgewählte Datei als Typ File zurückliefern
+        //wurde auf OK geklickt, dann die ausgewählte Datei als Typ File zurückliefern
         if (status == JFileChooser.APPROVE_OPTION)
             return (oeffnenDialog.getSelectedFile());
         else
@@ -63,7 +65,7 @@ public class MiniTextDialoge {
         //den Dialog anzeigen und den Status holen
         int status = speichernDialog.showSaveDialog(null);
 
-        //wurde auf Save geklickt, dann die ausgewählte Datei als Typ File zurückliefern
+        //wurde auf OK geklickt, dann die ausgewählte Datei als Typ File zurückliefern
         if (status == JFileChooser.APPROVE_OPTION)
             return (speichernDialog.getSelectedFile());
         else
