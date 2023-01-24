@@ -19,8 +19,8 @@ public class MiniText extends JFrame {
     private final HTMLEditorKit htmlFormat;
     private JPopupMenu kontext;
     private File datei;
-    private String tempName, permName;
-    private String ohneName = " - ohneName";
+    private final String tempName, permName;
+    private final String ohneName = " - ohneName";
 
 
     class MeineAktionen extends AbstractAction {
