@@ -3,7 +3,6 @@ package minitext;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
@@ -20,7 +19,9 @@ public class MiniText extends JFrame {
     private final HTMLEditorKit htmlFormat;
     private JPopupMenu kontext;
     private File datei;
-    private String textName;
+    private String tempName, permName;
+    private String ohneName = " - ohneName";
+
 
     class MeineAktionen extends AbstractAction {
         public MeineAktionen(String text, ImageIcon icon, String bildschirm, KeyStroke shortcut, String actionText) {
@@ -38,6 +39,7 @@ public class MiniText extends JFrame {
                 dateiLaden();
             if (e.getActionCommand().equals("speichern"))
                 dateiSpeichern();
+
             if (e.getActionCommand().equals("speichernUnter"))
                 dateiSpechernUnter();
             if (e.getActionCommand().equals("drucken")) {
@@ -66,8 +68,13 @@ public class MiniText extends JFrame {
         }
     }
 
+
     public MiniText(String title) {
         super(title);
+        this.permName = getTitle();
+        setTitle(permName + ohneName);
+        this.tempName = this.permName;
+
 
         neuAct = new MeineAktionen("Neu", new ImageIcon("icons/new24.gif"), "Erstellt ein neues Dokument", KeyStroke.getKeyStroke('N', InputEvent.CTRL_DOWN_MASK), "neu");
         oeffnenAct = new MeineAktionen("Öffnen...", new ImageIcon("icons/open24.gif"), "Öffnet ein vorhandenes Dokument", KeyStroke.getKeyStroke('O', InputEvent.CTRL_DOWN_MASK), "oeffnen");
@@ -77,18 +84,21 @@ public class MiniText extends JFrame {
         beendenAct = new MeineAktionen("Beenden", null, "", null, "ende");
         infoAct = new MeineAktionen("Info", new ImageIcon("icons/information24.gif"), "Info", null, "info");
         druckenAct = new MeineAktionen("Drucken...", new ImageIcon("icons/print24.gif"), "Druckt das aktuelles Dokument", KeyStroke.getKeyStroke('P', InputEvent.CTRL_DOWN_MASK), "drucken");
-
         setLayout(new BorderLayout());
+
         eingabeFeld = new JEditorPane();
         htmlFormat = new HTMLEditorKit();
-        eingabeFeld.setEditorKit(htmlFormat);
+        //eingabeFeld.setEditorKit(htmlFormat);
         eingabeFeld.addMouseListener(new MeinKontextMenuListener());
+
+
         add(new JScrollPane(eingabeFeld), BorderLayout.CENTER);
         setExtendedState(MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(600, 200));
 
         menu();
         kontextMenu();
+
 
         add(new JScrollPane(symbolleiste()), BorderLayout.NORTH);
 
@@ -130,6 +140,7 @@ public class MiniText extends JFrame {
 
     }
 
+
     private JToolBar symbolleiste() {
         JToolBar leiste = new JToolBar();
 
@@ -158,7 +169,7 @@ public class MiniText extends JFrame {
 
         leiste.addSeparator();
 
-        Action bold = new StyledEditorKit.BoldAction();
+        /*Action bold = new StyledEditorKit.BoldAction();
         bold.putValue(Action.SHORT_DESCRIPTION, "Fett formatieren");
         bold.putValue(Action.LARGE_ICON_KEY, new ImageIcon("icons/bold24.gif"));
         leiste.add(bold);
@@ -194,9 +205,11 @@ public class MiniText extends JFrame {
 
 
         Action blockAbsatz = new StyledEditorKit.AlignmentAction("Blocksatz", StyleConstants.ALIGN_JUSTIFIED);
-        blockAbsatz.putValue(Action.SHORT_DESCRIPTION, "Im Blocksatz ausrichten");
+        blockAbsatz.putValue(Action.SHORT_DESCRIPTION, "Blocksatz ausrichten");
         blockAbsatz.putValue(Action.LARGE_ICON_KEY, new ImageIcon("icons/alignJustify24.gif"));
         leiste.add(blockAbsatz);
+
+         */
 
         leiste.addSeparator();
 
@@ -223,7 +236,10 @@ public class MiniText extends JFrame {
     private void dateiNeu() {
         if (JOptionPane.showConfirmDialog(this, "Wollen Sie wirklich ein neues Dokument anlegen?", "Neues Dokument", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             eingabeFeld.setText("");
-            datei = null;
+            this.datei = null;
+            setTitle(permName + ohneName);
+
+
         }
     }
 
@@ -233,10 +249,12 @@ public class MiniText extends JFrame {
 
         if (dateiLokal != null) {
             try {
-                eingabeFeld.read(new FileReader(datei), null);
-                datei = dateiLokal;
+                eingabeFeld.read(new FileReader(dateiLokal), null);
+                this.datei = dateiLokal;
+                setTitle(tempName + " - " + datei);
+
             } catch (IOException e) {
-                JOptionPane.showConfirmDialog(this, "Beim Laden hat es ein Problem gegeben", "Fehler", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Beim Laden hat es ein Problem gegeben", "Fehler", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -246,19 +264,23 @@ public class MiniText extends JFrame {
     private void dateiSpeichern() {
         if (datei == null) {
             MiniTextDialoge dialog = new MiniTextDialoge();
-            datei = dialog.speichernDialogZeigen();
+            this.datei = dialog.speichernDialogZeigen();
+            setTitle(tempName + " - " + datei);
 
         }
 
         if (datei != null) {
             try {
-                OutputStream output = new FileOutputStream(datei);
+                OutputStream output = new FileOutputStream(this.datei);
                 htmlFormat.write(output, eingabeFeld.getDocument(), 0, eingabeFeld.getDocument().getLength());
-                eingabeFeld.write(new FileWriter(datei));
+                eingabeFeld.write(new FileWriter(this.datei));
+
+
             } catch (IOException | BadLocationException e) {
                 JOptionPane.showConfirmDialog(this, "Beim Speichern hat es ein Problem gegeben", "Fehler", JOptionPane.ERROR_MESSAGE);
             }
         }
+
 
     }
 
@@ -266,7 +288,7 @@ public class MiniText extends JFrame {
         MiniTextDialoge dialog = new MiniTextDialoge();
         File dateiLokal = dialog.speichernDialogZeigen();
         if (dateiLokal != null) {
-            datei = dateiLokal;
+            this.datei = dateiLokal;
             dateiSpeichern();
         }
     }
@@ -282,26 +304,26 @@ public class MiniText extends JFrame {
         }
     }
 
-    private void webLaden(){
+    private void webLaden() {
         String adresse;
-        adresse= JOptionPane.showInputDialog(this,"Bitte geben Sie die URL der Seite ein.");
+        adresse = JOptionPane.showInputDialog(this, "Bitte geben Sie die URL der Seite ein.");
 
-        if (adresse!=null){
+        if (adresse != null) {
             eingabeFeld.setText("");
             try {
                 eingabeFeld.setPage(adresse);
-                datei=null;
-            }catch (IOException e){
-                JOptionPane.showMessageDialog(this,"Beim Laden ist ein Problem aufgetreten.");
+                datei = null;
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Beim Laden ist ein Problem aufgetreten.");
             }
         }
 
 
-
     }
 
+
     private void beenden() {
-        if (JOptionPane.showConfirmDialog(this, "Wollen Sie die Notiz wirklich schließen ?", "Warnung !", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+        if (JOptionPane.showConfirmDialog(this, "Sind Sie sicher ?", "Warnung!", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
             System.exit(0);
     }
 }
