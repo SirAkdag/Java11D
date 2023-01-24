@@ -290,6 +290,7 @@ public class MiniText extends JFrame {
         if (dateiLokal != null) {
             this.datei = dateiLokal;
             dateiSpeichern();
+            setTitle(tempName + " - " + datei);
         }
     }
 
